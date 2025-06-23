@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 project(acpp-clang)
 
+find_package(LLVM REQUIRED)
 get_filename_component(CLANG_BINARY_PREFIX ${CLANG_EXECUTABLE_PATH} DIRECTORY)
 
 if(NOT HIPSYCL_DEBUG_LEVEL)
@@ -100,7 +101,7 @@ function(configure_target)
   target_include_directories(${target} PRIVATE
     ../../include
     ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CMAKE_BINARY_DIR}/include)
+    ${ACPP_BINARY_DIR}/include)
   target_include_directories(${target} SYSTEM PRIVATE ${LLVM_INCLUDE_DIRS})
 
   separate_arguments(LLVM_DEFINITIONS_LIST NATIVE_COMMAND ${LLVM_DEFINITIONS})

@@ -40,7 +40,27 @@ if(WITH_SSCP_COMPILER)
 endif()
 
 if(BUILD_CLANG_PLUGIN)
-  add_subdirectory(compiler)
+  set(ACPP_BINARY_DIR ${CMAKE_BINARY_DIR})
+  # If cross-compiling, acpp clang plugin must be added as external project
+  # to compile it for the host and not for the target
+  if (COMPILE_FOR_MICROCONTROLLERS)
+    include(ExternalProject)
+    ExternalProject_Add(acpp-clang
+        SOURCE_DIR ${CMAKE_SOURCE_DIR}/src/compiler
+        BINARY_DIR ${CMAKE_BINARY_DIR}/src/compiler
+        CMAKE_ARGS
+        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+        -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
+        -DACPP_BINARY_DIR=${ACPP_BINARY_DIR}
+        -DLLVM_DIR=${LLVM_DIR}
+        -DCLANG_EXECUTABLE_PATH=${CLANG_EXECUTABLE_PATH}
+        -DHIPSYCL_DEBUG_LEVEL=${HIPSYCL_DEBUG_LEVEL}
+        -DWITH_ACCELERATED_CPU=${WITH_ACCELERATED_CPU}
+        -DWITH_SSCP_COMPILER=${WITH_SSCP_COMPILER}
+    )
+  else()
+    add_subdirectory(compiler)
+  endif()
   add_subdirectory(libkernel)
 endif()
 
