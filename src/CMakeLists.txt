@@ -57,7 +57,21 @@ if(BUILD_CLANG_PLUGIN)
         -DHIPSYCL_DEBUG_LEVEL=${HIPSYCL_DEBUG_LEVEL}
         -DWITH_ACCELERATED_CPU=${WITH_ACCELERATED_CPU}
         -DWITH_SSCP_COMPILER=${WITH_SSCP_COMPILER}
+        # disable the install step during build
+        INSTALL_COMMAND ""
     )
+    install(CODE [[
+      message(STATUS "Installing acpp-clang")
+      execute_process(
+        COMMAND "${CMAKE_COMMAND}"
+                --install "${CMAKE_BINARY_DIR}/src/compiler"
+                --prefix  "${CMAKE_INSTALL_PREFIX}"
+        RESULT_VARIABLE ACPP_CLANG_INSTALL_RESULT
+      )
+      if(NOT ACPP_CLANG_INSTALL_RESULT EQUAL 0)
+        message(FATAL_ERROR "acpp-clang installation failed")
+      endif()
+    ]])
   else()
     add_subdirectory(compiler)
   endif()
